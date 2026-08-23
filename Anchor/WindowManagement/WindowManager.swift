@@ -4,9 +4,15 @@
 //
 //  Created by Андрей Мокрецов on 24.08.2026.
 //
+import AppKit
+
 
 final class WindowManager {
-    init() {
-        print("Anchor started")
+    func start() {
+        discoverWindows()
+    }
+    
+    private func discoverWindows() {
+        
     }
 }

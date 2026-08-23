@@ -11,6 +11,10 @@ import SwiftUI
 struct AnchorApp: App {
     private let windowManager = WindowManager()
     
+    init () {
+        windowManager.start()
+    }
+    
     var body: some Scene {
         Settings {
             EmptyView()
