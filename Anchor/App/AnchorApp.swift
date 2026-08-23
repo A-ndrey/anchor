@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 @main
 struct AnchorApp: App {
@@ -13,6 +14,8 @@ struct AnchorApp: App {
     
     init () {
         windowManager.start()
+        
+        Logger.app.info("Anchor started")
     }
     
     var body: some Scene {
