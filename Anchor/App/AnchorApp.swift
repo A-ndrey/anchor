@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct AnchorApp: App {
+    private let windowManager = WindowManager()
+    
     var body: some Scene {
         Settings {
             EmptyView()
