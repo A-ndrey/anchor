@@ -8,6 +8,7 @@ import ApplicationServices
 
 struct AXWindow {
     let element: AXUIElement
+    let pid: pid_t
     
     func title() -> String? {
         var value: CFTypeRef?

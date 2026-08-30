@@ -7,9 +7,11 @@
 import AppKit
 import OSLog
 
-
+@MainActor
 final class WindowManager {
-    private lazy var applicationTracker: ApplicationTracker = ApplicationTracker(
+    private var applications: [pid_t: AXApplication] = [:]
+    
+    private lazy var applicationTracker = ApplicationTracker(
         onLaunch: {[weak self] application in
             self?.applicationDidLaunch(application)
         },
@@ -18,7 +20,6 @@ final class WindowManager {
         }
     )
     
-    
     func start() {
         Logger.windowManager.info("Starting window manager")
         
@@ -26,10 +27,39 @@ final class WindowManager {
     }
     
     private func applicationDidLaunch(_ application: NSRunningApplication) {
-        Logger.windowManager.debug("Tracking application pid=\(application.processIdentifier) name=\(application.localizedName ?? "<unknown>")")
+        let pid = application.processIdentifier
+        
+        guard applications[pid] == nil else {
+            return
+        }
+        
+        Logger.windowManager.debug("Adding application pid=\(pid): \(application.localizedName ?? "<no name>")")
+        
+        let axApplication = AXApplication(
+            application: application,
+            onWindowCreated: { [weak self] element in
+                self?.windowCreated(element)
+            }
+        )
+        
+        applications[pid] = axApplication
+        
+        for window in axApplication.windows() {
+            windowCreated(window)
+        }
+        
+        axApplication.startObserving()
     }
     
     private func applicationDidTerminate(_ application: NSRunningApplication) {
-        Logger.windowManager.debug("Removing application pid=\(application.processIdentifier)")
+        let pid = application.processIdentifier
+        
+        Logger.windowManager.debug("Removing application pid=\(pid)")
+        
+        applications.removeValue(forKey: pid)
+    }
+    
+    private func windowCreated(_ window: AXWindow) {
+        Logger.windowManager.debug("Window created for application pid=\(window.pid)")
     }
 }
